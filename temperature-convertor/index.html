@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Temperature Convertor</title>
+</head>
+
+<body>
+    <h1>Temperature Convertor</h1>
+    Celsius <input type="text" id="celsius" value="" onkeyup="onChange('celsius')" />
+    Fahrenheit <input type="text" id="fahrenheit" value="" onkeyup="onChange('fahrenheit')" />
+
+    <script>
+        const temperature = {
+            celsius: null,
+            fahrenheit: null,
+            // setters to update dom as well
+            set celsius(value) {
+                updateTemperature('celsius', value);
+            },
+            set fahrenheit(value) {
+                updateTemperature('fahrenheit', value);
+            }
+        }
+
+        function updateTemperature(temperatureUnit, value) {
+            document.getElementById(temperatureUnit).value = value;
+        }
+
+        function onChange(temperatureUnit) {
+            const value = getValidTemperature(document.getElementById(temperatureUnit).value);
+
+            if (value === null) {
+                return;
+            }
+            if (temperatureUnit === 'celsius') {
+                temperature.fahrenheit = (value * 9 / 5) + 32;
+            }
+            else {
+                temperature.celsius = (value - 32) * 5 / 9;
+            }
+        }
+
+        function getValidTemperature(value) {
+            return (value !== '' && !isNaN(Number(value))) ? Number(value) : null;
+        }
+
+    </script>
+</body>
+
+</html>
