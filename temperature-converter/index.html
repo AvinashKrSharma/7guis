@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-Aks012BA'">
+    <title>Temperature Converter</title>
+    <style>
+        input {
+            border-radius: 0;
+            outline: none;
+        }
+        input:focus {
+            border-color: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Temperature Converter</h1>
+    <form>
+        <input type="text" id="celsius" value="" />
+        <label for="celsius">Celsius</label>
+        <span>&#61;</span>
+        <input type="text" id="fahrenheit" value="" />
+        <label for="fahrenheit">Fahrenheit</label>
+    </form>
+    <script nonce="Aks012BA">
+        document.getElementById('celsius').addEventListener('input', onChange);
+        document.getElementById('fahrenheit').addEventListener('input', onChange);
+
+        const temperature = {
+            celsius: null,
+            fahrenheit: null,
+            // setters to update dom as well
+            set celsius(value) {
+                updateTemperatureField('celsius', value);
+            },
+            set fahrenheit(value) {
+                updateTemperatureField('fahrenheit', value);
+            }
+        }
+
+        function celsiusToFahrenheit(celsius) {
+            return (celsius * 9 / 5) + 32;
+        }
+
+        function fahrenheitToCelsius(fahrenheit) {
+            return (fahrenheit - 32) * 5 / 9;
+        }
+
+        function updateTemperatureField(temperatureUnit, value) {
+            document.getElementById(temperatureUnit).value = value;
+        }
+
+        function onChange(event) {
+            const value = event.target.value;
+            const temperatureUnit = event.target.id;
+
+            if (!isValidTemperatureValue(value)) {
+                return;
+            }
+
+            const temperatureValue = Number(event.target.value);
+            if (temperatureUnit === 'celsius') {
+                temperature.fahrenheit = celsiusToFahrenheit(value);
+            }
+            else {
+                temperature.celsius = fahrenheitToCelsius(value);
+            }
+        }
+
+        function isValidTemperatureValue(value) {
+            return (value !== '' && !isNaN(Number(value)));
+        }
+
+    </script>
+</body>
+
+</html>
