@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-Aks012BA'">
+    <title>Book Flight</title>
+    <style>
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 200px;
+        }
+
+        select,
+        input,
+        button {
+            margin: 5px 0;
+        }
+
+        input {
+            border-radius: 0;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 
+    Conditions:
+        Default: Type = one way, T2 = Disabled
+        T1 or T2 = Invalid, T = Red, Button = Disabled
+        Type = return, T2 = enabled
+            T1 <= T2, Button = Enabled
+            T1 > T2, Button = Disabled
+        Book = Show Booking details
+    -->
+    <h1>Flight Booker</h1>
+    <form>
+        <select id="trip-type">
+            <option value="one-way-flight">one-way-flight</option>
+            <option value="return-flight">return-flight</option>
+        </select>
+        <input id="start-date" type="text" />
+        <input id="return-date" type="text" />
+        <button id="book" type="button">Book</button>
+    </form>
+    <script nonce="Aks012BA">
+        const _bookingState = {
+            startDate: '',
+            returnDate: '',
+            tripType: 'one-way-flight'
+        };
+
+        function updateFlightBookerState({ startDate, returnDate, tripType }) {
+            let isBookingValid;
+            if (tripType === 'one-way-flight') {
+                toggleFieldEnabledState('return-date', false);
+
+                if (!isValidDate(startDate)) {
+                    toggleFieldValidity('start-date', false);
+                    isBookingValid = false;
+                } else {
+                    toggleFieldValidity('start-date', true);
+                    isBookingValid = true;
+                }
+
+                toggleFieldEnabledState('book', isBookingValid);
+                return;
+            }
+
+            toggleFieldEnabledState('return-date', true);
+
+            if (isValidDate(startDate)) {
+                toggleFieldValidity('start-date', true);
+                isBookingValid = true;
+            } else {
+                toggleFieldValidity('start-date', false);
+                isBookingValid = false;
+            }
+
+            if (isValidDate(returnDate)) {
+                toggleFieldValidity('return-date', true);
+                isBookingValid = isBookingValid && true;
+            } else {
+                toggleFieldValidity('return-date', false);
+                isBookingValid = false;
+            }
+
+            if (isDateLessThanOrEqualTo(startDate, returnDate)) {
+                isBookingValid = isBookingValid && true;
+            } else {
+                isBookingValid = false;
+            }
+            toggleFieldEnabledState('book', isBookingValid);
+
+        }
+
+        function toggleFieldEnabledState(field, state) {
+            document.getElementById(field).disabled = !state;
+        }
+
+        function toggleFieldValidity(field, isValid) {
+            document.getElementById(field).style.backgroundColor = isValid ? 'white' : 'red';
+        }
+
+        function onChangeTripType(event) {
+            _bookingState.tripType = event.target.value;
+            updateFlightBookerState(_bookingState);
+        }
+        function onChangeStartDate(event) {
+            _bookingState.startDate = event.target.value;
+            updateFlightBookerState(_bookingState);
+        }
+        function onChangeReturnDate(event) {
+            _bookingState.returnDate = event.target.value;
+            updateFlightBookerState(_bookingState);
+        }
+        function onClickBook(event) {
+            alert(`You have booked a ${_bookingState.tripType} flight on ${_bookingState.startDate}${_bookingState.tripType === 'return-flight' ? ' to ' + _bookingState.returnDate : ''}.`);
+        }
+
+        function isDateLessThanOrEqualTo(start, end) {
+            const _start = Date.parse(start.split('.').reverse().join('-'));
+            const _end = Date.parse(end.split('.').reverse().join('-'));
+            return _start <= _end;
+        }
+
+        function isValidDate(date) {
+            return date === "" || !isNaN(Date.parse(date.split('.').reverse().join('-')));
+        }
+
+        updateFlightBookerState(_bookingState);
+
+        document.getElementById('trip-type').addEventListener('change', onChangeTripType);
+        document.getElementById('start-date').addEventListener('input', onChangeStartDate);
+        document.getElementById('return-date').addEventListener('input', onChangeReturnDate);
+        document.getElementById('book').addEventListener('click', onClickBook);
+    </script>
+</body>
+
+</html>
