@@ -10,8 +10,40 @@
         .root {
             max-width: 300px;
         }
-        .gauge, .slider {
-            display: inline;
+
+        #gauge {
+            width: 200px;
+            height: 20px;
+            /* overflow: hidden; */
+        }
+
+        #gauge>span {
+            width: 10px;
+            height: 20px;
+            display: inline-block;
+            background: skyblue;
+        }
+
+        #gauge,
+        #slider {
+            display: inline-block;
+            border: 1px solid black;
+            border-radius: 3px;
+        }
+
+        .progress {
+            animation: progressBar 3s ease-in-out;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes progressBar {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -21,7 +53,9 @@
     <div class="root">
         <div>
             <span>Elapsed Time</span>
-            <div id="gauge"></div>
+            <div id="gauge">
+                <span class="progress"></span>
+            </div>
         </div>
         <div id="elapsed-time-label"></div>
         <div>
@@ -32,6 +66,7 @@
     </div>
 
     <script nonce="Aks012BA">
+        
     </script>
 </body>
 
