@@ -14,14 +14,16 @@
         #gauge {
             width: 200px;
             height: 20px;
-            /* overflow: hidden; */
         }
 
         #gauge>span {
-            width: 10px;
+            width: 0;
             height: 20px;
             display: inline-block;
             background: skyblue;
+
+            transition-property: width;
+            transition-timing-function: linear;
         }
 
         #gauge,
@@ -32,18 +34,7 @@
         }
 
         .progress {
-            animation: progressBar 3s ease-in-out;
-            animation-fill-mode: forwards;
-        }
-
-        @keyframes progressBar {
-            0% {
-                width: 0;
-            }
-
-            100% {
-                width: 100%;
-            }
+            overflow: hidden;
         }
     </style>
 </head>
@@ -54,19 +45,59 @@
         <div>
             <span>Elapsed Time</span>
             <div id="gauge">
-                <span class="progress"></span>
+                <span id="progress" class="progress"></span>
             </div>
         </div>
         <div id="elapsed-time-label"></div>
         <div>
             <span>Duration: &nbsp;</span>
-            <div id="slider"></div>
+            <input type="range" id="range" min="5" max="20" value="5" />
         </div>
         <button id="reset">Reset</button>
     </div>
 
     <script nonce="Aks012BA">
-        
+        const timerState = {
+            elapsedTime: 0,
+            duration: 5000,
+        };
+
+        const progressElement = document.getElementById('progress');
+        const gaugeElement = document.getElementById('gauge');
+        const rangeElement = document.getElementById('range');
+        const resetButton = document.getElementById('reset');
+        let timer = null;
+
+        rangeElement.addEventListener('input', (e) => {
+            timerState.duration = e.target.value * 1000;
+            if (!timer) {
+                timerState.elapsedTime = 0;
+                startProgressBarLoading()
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            timerState.elapsedTime = 0;
+            startProgressBarLoading();
+        });
+
+        function startProgressBarLoading() {
+            timer = setInterval(() => {
+                timerState.elapsedTime += 16;
+                if (timerState.elapsedTime >= timerState.duration) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+                progressElement.style.width = `${timerState.elapsedTime / timerState.duration * 100}%`;
+            }, 16);
+        }
+
+        startProgressBarLoading();
+
     </script>
 </body>
 
