@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-Aks012BA'">
+    <title>CRUD</title>
+    <style>
+        * {
+            margin: 2px;
+        }
+
+        form {
+            max-width: 400px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1 1 0;
+        }
+
+        #list {
+            width: 200px;
+            height: 200px;
+            border: 1px solid black;
+        }
+
+        label {
+            display: inline-block;
+        }
+
+        .vertical {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CRUD</h1>
+    <form>
+        <label>Filter Prefix</label>
+        <input type="text" id="prefix" value="" />
+        <div class="container">
+            <div id="list"></div>
+            <div class="vertical">
+                <label>Name</label><input type="text" id="name" value="" />
+                <label>Surname</label><input type="text" id="surname" value="" />
+            </div>
+        </div>
+        <button type="button" id="create">Create</button>
+        <button type="button" id="update">Update</button>
+        <button type="button" id="delete">Delete</button>
+    </form>
+    <script nonce="Aks012BA">
+        class Model {
+            constructor(data) {
+                this.data = data;
+                this.selection = 0;
+                this.events = [];
+            }
+            on(event, handler) {
+                this.events.push({ event, handler });
+            }
+            emit(event) {
+                this.events.forEach((_e) => {
+                    if (_e.event === event) {
+                        _e.handler(this.data, this.selection);
+                    }
+                })
+            }
+            select(index) {
+                this.selection = index;
+                this.emit('update');
+            }
+            push(data) {
+                this.data.push(data);
+                this.emit('update');
+            }
+            update(data, index = this.selection) {
+                this.data[index] = data;
+                this.emit('update');
+            }
+            delete(index) {
+                this.data.splice(index, 1);
+                this.emit('update');
+            }
+        }
+
+        const model = new Model([]);
+        model.on('update', renderList);
+
+        (function _create() {
+            getById('create').addEventListener('click', function () {
+                model.push({
+                    name: getById('name').value,
+                    surname: getById('surname').value
+                });
+            });
+        })();
+
+        (function _update() {
+            getById('update').addEventListener('click', function () {
+                model.update({
+                    name: getById('name').value,
+                    surname: getById('surname').value
+                });
+            });
+        })();
+
+        (function _delete() {
+            getById('delete').addEventListener('click', function () {
+                model.delete(model.selection);
+            });
+        })();
+
+        getById('list').addEventListener('click', function (e) {
+            model.selection = e.target.getAttribute('data-index');
+        });
+
+        function renderList(data) {
+            getById('list').innerHTML = '';
+            data.forEach((rowData, index) => {
+                const listContainerElement = getById('list');
+                const rowElement = document.createElement('div');
+                rowElement.setAttribute('data-index', data.indexOf(index));
+                rowElement.innerText = `${rowData.name} ${rowData.surname}`;
+                if (model.selection === index) {
+                    rowElement.style.backgroundColor = 'lightblue'
+                }
+
+                listContainerElement.appendChild(rowElement);
+            });
+        }
+        function getById(id) {
+            return document.getElementById(id);
+        }
+    </script>
+</body>
+
+</html>
