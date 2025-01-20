@@ -58,6 +58,7 @@
             constructor(data) {
                 this.data = data;
                 this.selection = 0;
+                this.filterQuery = "";
                 this.events = [];
             }
             on(event, handler) {
@@ -72,6 +73,10 @@
             }
             select(index) {
                 this.selection = index;
+                this.emit('update');
+            }
+            filter(query) {
+                this.filterQuery = query;
                 this.emit('update');
             }
             push(data) {
@@ -115,22 +120,33 @@
             });
         })();
 
-        getById('list').addEventListener('click', function (e) {
-            model.selection = e.target.getAttribute('data-index');
-        });
+        (function _select() {
+            getById('list').addEventListener('click', function (e) {
+                model.select(e.target.getAttribute('data-index'));
+            });
+
+        })();
+
+        (function _filter() {
+            getById('prefix').addEventListener('input', function (e) {
+                model.filter(e.target.value);
+            });
+
+        })()
 
         function renderList(data) {
             getById('list').innerHTML = '';
             data.forEach((rowData, index) => {
-                const listContainerElement = getById('list');
-                const rowElement = document.createElement('div');
-                rowElement.setAttribute('data-index', data.indexOf(index));
-                rowElement.innerText = `${rowData.name} ${rowData.surname}`;
-                if (model.selection === index) {
-                    rowElement.style.backgroundColor = 'lightblue'
+                if (rowData.surname.indexOf(model.filterQuery) === 0) {
+                    const listContainerElement = getById('list');
+                    const rowElement = document.createElement('div');
+                    rowElement.setAttribute('data-index', index);
+                    rowElement.innerText = `${rowData.name} ${rowData.surname}`;
+                    if (+model.selection === index) {
+                        rowElement.style.backgroundColor = 'lightblue'
+                    }
+                    listContainerElement.appendChild(rowElement);
                 }
-
-                listContainerElement.appendChild(rowElement);
             });
         }
         function getById(id) {
