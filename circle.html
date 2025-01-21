@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-Aks012BA'">
+    <title>Circle</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            margin: 10px 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            width: 500px;
+        }
+
+        button {
+            width: 100px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <button>Undo</button>
+        <button>Redo</button>
+
+    </div>
+    <script nonce="Aks012BA">
+        const canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 500;
+        canvas.height = 500;
+
+        canvas.addEventListener('click', (event) => {
+            const rectangle = canvas.getBoundingClientRect();
+            const {clientX, clientY} = event;
+            const {top, left} = rectangle;
+            drawCircle(clientX - left, clientY - top);
+        })
+
+        function drawCircle(x, y) {
+            ctx.beginPath()
+            ctx.arc(x, y, 50, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+    </script>
+</body>
+
+</html>
